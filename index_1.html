@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>John Guide's Repo Guide · Dandy's World</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#120f1a;
+    --surface-1:#1b1728;
+    --surface-2:#221c33;
+    --surface-3:#2a2340;
+    --border:#342a44;
+    --border-strong:#453a5c;
+    --text:#f3eef9;
+    --text-secondary:#b3a8c9;
+    --text-muted:#77708f;
+    --brand:#ff4f93;
+    --brand-dim:#5c1f3c;
+    --support:#b48cf2;
+    --support-dim:#2c2340;
+    --extracteur:#38d9c9;
+    --extracteur-dim:#173634;
+    --soigneur:#7ee08a;
+    --soigneur-dim:#1c3320;
+    --distracteur:#ff8a4c;
+    --distracteur-dim:#3a2418;
+    --radius:10px;
+    --font-display:'Fredoka',sans-serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.6;
+    min-height:100vh;
+  }
+  ::selection{background:var(--brand);color:#fff;}
+  a{color:var(--brand);}
+
+  /* ---------- App shell ---------- */
+  .app{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+  header.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:14px 24px;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,#171224,#120f1a);
+    position:sticky;
+    top:0;
+    z-index:30;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    font-family:var(--font-display);
+  }
+  .brand .mark{
+    color:var(--brand);
+    font-size:22px;
+    font-weight:700;
+  }
+  .brand .sub{
+    color:var(--text-muted);
+    font-size:13px;
+    font-family:var(--font-body);
+  }
+  nav.toplinks{
+    display:flex;
+    gap:4px;
+    background:var(--surface-1);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:3px;
+  }
+  nav.toplinks button{
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:13px;
+    border:none;
+    background:transparent;
+    color:var(--text-secondary);
+    padding:7px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  nav.toplinks button.active{
+    background:var(--brand);
+    color:#fff;
+  }
+
+  main{
+    flex:1;
+    display:flex;
+    max-width:1180px;
+    width:100%;
+    margin:0 auto;
+    align-items:flex-start;
+  }
+
+  /* ---------- View switching ---------- */
+  .view{display:none;width:100%;}
+  .view.active{display:flex;width:100%;}
+  #view-general{display:none;padding:28px 24px 64px;}
+  #view-general.active{display:block;}
+
+  /* ---------- Sidebar ---------- */
+  aside.sidebar{
+    width:290px;
+    flex-shrink:0;
+    border-right:1px solid var(--border);
+    position:sticky;
+    top:61px;
+    align-self:flex-start;
+    height:calc(100vh - 61px);
+    display:flex;
+    flex-direction:column;
+    padding:18px 14px;
+    gap:14px;
+  }
+  .search-wrap{position:relative;}
+  #search{
+    width:100%;
+    padding:10px 12px 10px 34px;
+    border-radius:var(--radius);
+    border:1px solid var(--border-strong);
+    background:var(--surface-1);
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:14px;
+    outline:none;
+  }
+  #search:focus{border-color:var(--brand);}
+  #search::placeholder{color:var(--text-muted);}
+  .search-wrap svg{
+    position:absolute;
+    left:10px;
+    top:50%;
+    transform:translateY(-50%);
+    opacity:.5;
+  }
+  .filters{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .chip{
+    font-family:var(--font-body);
+    font-size:12px;
+    font-weight:600;
+    padding:5px 11px;
+    border-radius:999px;
+    border:1px solid var(--border-strong);
+    background:var(--surface-1);
+    color:var(--text-secondary);
+    cursor:pointer;
+    user-select:none;
+  }
+  .chip.active[data-role="Tous"]{background:var(--brand);border-color:var(--brand);color:#fff;}
+  .chip.active[data-role="Support"]{background:var(--support-dim);border-color:var(--support);color:var(--support);}
+  .chip.active[data-role="Extracteur"]{background:var(--extracteur-dim);border-color:var(--extracteur);color:var(--extracteur);}
+  .chip.active[data-role="Soigneur"]{background:var(--soigneur-dim);border-color:var(--soigneur);color:var(--soigneur);}
+  .chip.active[data-role="Distracteur"]{background:var(--distracteur-dim);border-color:var(--distracteur);color:var(--distracteur);}
+
+  #toon-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    overflow-y:auto;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  #toon-list li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:9px 10px;
+    border-radius:8px;
+    cursor:pointer;
+    color:var(--text-secondary);
+  }
+  #toon-list li:hover{background:var(--surface-1);}
+  #toon-list li.selected{background:var(--surface-2);color:var(--text);}
+  #toon-list li .dot{
+    width:9px;height:9px;border-radius:50%;flex-shrink:0;
+  }
+  #toon-list li .name{
+    font-weight:600;
+    font-size:14px;
+    flex:1;
+  }
+  #toon-list li .floor{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-muted);
+  }
+  .empty-list{
+    color:var(--text-muted);
+    font-size:13px;
+    padding:16px 8px;
+    text-align:center;
+  }
+
+  /* ---------- Detail pane ---------- */
+  #detail{
+    flex:1;
+    padding:28px 32px 64px;
+    min-width:0;
+  }
+  .detail-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:24px;
+    flex-wrap:wrap;
+    margin-bottom:6px;
+  }
+  .detail-header h1{
+    font-family:var(--font-display);
+    font-size:34px;
+    font-weight:600;
+    margin:0 0 6px;
+  }
+  .role-line{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .role-pill{
+    font-size:12px;
+    font-weight:600;
+    padding:4px 11px;
+    border-radius:999px;
+  }
+  .role-pill.Support{background:var(--support-dim);color:var(--support);}
+  .role-pill.Extracteur{background:var(--extracteur-dim);color:var(--extracteur);}
+  .role-pill.Soigneur{background:var(--soigneur-dim);color:var(--soigneur);}
+  .role-pill.Distracteur{background:var(--distracteur-dim);color:var(--distracteur);}
+
+  .floor-gauge{
+    min-width:190px;
+    flex-shrink:0;
+  }
+  .floor-gauge .label{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:11px;
+    color:var(--text-muted);
+    font-family:var(--font-mono);
+    margin-bottom:4px;
+  }
+  .floor-gauge .label span:first-child{
+    white-space:nowrap;
+  }
+  .floor-gauge .label span:last-child{
+    white-space:nowrap;
+    flex-shrink:0;
+    color:var(--text);
+    font-weight:500;
+  }
+  .floor-gauge .track{
+    height:12px;
+    background:var(--surface-2);
+    border:1px solid var(--border-strong);
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .floor-gauge .fill{
+    height:100%;
+    background:repeating-linear-gradient(
+      -45deg,
+      #ff4f93 0 6px,
+      #fff0f6 6px 12px
+    );
+    border-radius:999px 0 0 999px;
+  }
+
+  section.block{
+    margin-top:26px;
+  }
+  section.block h2{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:16px;
+    letter-spacing:.2px;
+    color:var(--text);
+    margin:0 0 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  section.block h2::before{
+    content:"";
+    width:4px;
+    height:16px;
+    background:var(--brand);
+    border-radius:2px;
+    display:inline-block;
+  }
+  .cap-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .cap-card{
+    background:var(--surface-1);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px 16px;
+  }
+  .cap-card .tag{
+    font-family:var(--font-mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--text-muted);
+    margin-bottom:6px;
+    display:block;
+  }
+  .cap-card p{margin:0;font-size:14px;color:var(--text-secondary);}
+
+  .trinket-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .trinket-row{
+    display:flex;
+    gap:12px;
+    background:var(--surface-1);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:10px 14px;
+    font-size:13.5px;
+    align-items:baseline;
+    flex-wrap:wrap;
+  }
+  .trinket-row .t-label{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-muted);
+    min-width:180px;
+  }
+  .trinket-row .t-combo{color:var(--text);font-weight:500;}
+
+  .inv-box{
+    background:var(--surface-1);
+    border:1px solid var(--border);
+    border-left:3px solid var(--brand);
+    border-radius:0 var(--radius) var(--radius) 0;
+    padding:12px 16px;
+    font-size:14px;
+    color:var(--text-secondary);
+  }
+
+  ul.tips{
+    margin:0;
+    padding-left:0;
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  ul.tips li{
+    position:relative;
+    padding-left:18px;
+    font-size:14px;
+    color:var(--text-secondary);
+  }
+  ul.tips li::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:8px;
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--brand);
+  }
+
+  .warn-box{
+    background:var(--distracteur-dim);
+    border:1px solid #6b3a1f;
+    border-radius:var(--radius);
+    padding:12px 16px;
+    font-size:14px;
+    color:#ffcfa8;
+  }
+  .panic-box{
+    background:var(--surface-2);
+    border:1px solid var(--border-strong);
+    border-radius:var(--radius);
+    padding:12px 16px;
+    font-size:14px;
+    color:var(--text-secondary);
+  }
+  .notes-box{
+    font-size:13.5px;
+    color:var(--text-muted);
+    border-top:1px dashed var(--border-strong);
+    padding-top:12px;
+  }
+  .notes-box p{margin:0 0 6px;}
+
+  .placeholder{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:60vh;
+    color:var(--text-muted);
+    font-family:var(--font-display);
+    font-size:16px;
+    text-align:center;
+    padding:0 20px;
+  }
+
+  /* ---------- General tab ---------- */
+  #view-general h1{
+    font-family:var(--font-display);
+    font-size:30px;
+    margin:0 0 22px;
+  }
+  #view-general h2{
+    font-family:var(--font-display);
+    font-size:17px;
+    margin:34px 0 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  #view-general h2::before{
+    content:"";
+    width:4px;height:16px;background:var(--brand);border-radius:2px;display:inline-block;
+  }
+  .twisted-card{
+    background:var(--surface-1);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:12px 16px;
+    margin-bottom:8px;
+    font-size:14px;
+    color:var(--text-secondary);
+  }
+  .twisted-card b{color:var(--text);font-family:var(--font-display);font-weight:600;}
+
+  table.speed{
+    width:100%;
+    border-collapse:collapse;
+    font-family:var(--font-mono);
+    font-size:13px;
+  }
+  table.speed th{
+    text-align:left;
+    color:var(--text-muted);
+    font-weight:500;
+    padding:8px 10px;
+    border-bottom:1px solid var(--border-strong);
+    font-family:var(--font-body);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+  table.speed td{
+    padding:8px 10px;
+    border-bottom:1px solid var(--border);
+    color:var(--text-secondary);
+  }
+  table.speed td.first{color:var(--text);font-family:var(--font-body);font-weight:500;}
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);}
+
+  .comp-list{display:flex;flex-direction:column;gap:10px;}
+  .comp-row{
+    background:var(--surface-1);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:10px 16px;
+    font-size:14px;
+    color:var(--text-secondary);
+  }
+  .comp-row b{color:var(--text);}
+
+  .closing{
+    margin-top:40px;
+    padding:18px 20px;
+    background:var(--surface-2);
+    border-radius:var(--radius);
+    font-family:var(--font-display);
+    font-size:15px;
+    color:var(--text);
+    text-align:center;
+  }
+
+  /* ---------- Mobile ---------- */
+  .menu-btn{
+    display:none;
+    background:var(--surface-1);
+    border:1px solid var(--border-strong);
+    color:var(--text);
+    border-radius:8px;
+    width:36px;height:36px;
+    align-items:center;justify-content:center;
+    cursor:pointer;
+  }
+  .back-btn{
+    display:none;
+    font-family:var(--font-body);
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-secondary);
+    background:var(--surface-1);
+    border:1px solid var(--border-strong);
+    border-radius:8px;
+    padding:7px 12px;
+    cursor:pointer;
+    margin-bottom:16px;
+    align-items:center;
+    gap:6px;
+  }
+
+  @media (max-width: 820px){
+    .brand .sub{display:none;}
+    main{display:block;}
+    aside.sidebar{
+      position:fixed;
+      top:0;left:0;
+      height:100vh;
+      width:82%;
+      max-width:320px;
+      background:var(--bg);
+      z-index:50;
+      transform:translateX(-105%);
+      transition:transform .2s ease;
+      box-shadow:2px 0 24px rgba(0,0,0,.5);
+    }
+    aside.sidebar.open{transform:translateX(0);}
+    .menu-btn{display:flex;}
+    .sidebar-overlay{
+      display:none;
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.5);
+      z-index:40;
+    }
+    .sidebar-overlay.open{display:block;}
+    #detail{padding:20px 16px 60px;}
+    .back-btn{display:inline-flex;}
+    .cap-grid{grid-template-columns:1fr;}
+    .detail-header h1{font-size:26px;}
+    #view-general{padding:20px 16px 60px;}
+    .trinket-row{flex-direction:column;}
+    .trinket-row .t-label{min-width:auto;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="menu-btn" id="menuBtn" aria-label="Ouvrir la liste des toons">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="brand">
+        <span class="mark">John Guide's Repo Guide</span>
+        <span class="sub">Dandy's World · Guide des Toons</span>
+      </div>
+    </div>
+    <nav class="toplinks">
+      <button id="tab-toons" class="active">Toons</button>
+      <button id="tab-general">Conseils généraux</button>
+    </nav>
+  </header>
+
+  <main>
+    <div id="view-toons" class="view active" style="display:flex;">
+      <div class="sidebar-overlay" id="overlay"></div>
+      <aside class="sidebar" id="sidebar">
+        <div class="search-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="search" type="text" placeholder="Rechercher un toon..." autocomplete="off">
+        </div>
+        <div class="filters" id="filters">
+          <span class="chip active" data-role="Tous">Tous</span>
+          <span class="chip" data-role="Support">Support</span>
+          <span class="chip" data-role="Extracteur">Extracteur</span>
+          <span class="chip" data-role="Soigneur">Soigneur</span>
+          <span class="chip" data-role="Distracteur">Distracteur</span>
+        </div>
+        <ul id="toon-list"></ul>
+      </aside>
+      <div id="detail">
+        <button class="back-btn" id="backBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Tous les toons
+        </button>
+        <div id="detail-content"></div>
+      </div>
+    </div>
+
+    <div id="view-general" class="view"></div>
+  </main>
+</div>
+
+<script>
+const ROLE_COLOR = {
+  Support: "var(--support)",
+  Extracteur: "var(--extracteur)",
+  Soigneur: "var(--soigneur)",
+  Distracteur: "var(--distracteur)"
+};
+const MAX_FLOOR = 116;
+
+const toons = [
+{
+  id:"bobette", name:"Bobette", roles:["Support"], roleLabel:"Support",
+  floor:116, floorPlus:false,
+  passive:"Un anneau entoure Bobette. Les alliés à l'intérieur gagnent de la vitesse et une régénération d'endurance indéfiniment. Quand ils sortent de l'anneau, le boost persiste encore 5 secondes.",
+  active:"Bobette devient invincible et invisible pendant 8 secondes mais ne peut pas bouger. Temps de recharge : 90 secondes. Son anneau reste actif pendant ce temps.",
+  trinkets:[
+    {label:"Support du distracteur (runs standard / sérieuses)", value:"Diary + Toy Kit"},
+    {label:"Support du distracteur (duo confiant)", value:"Diary + Magnifying Glass"},
+    {label:"Rôle extracteur", value:"Veemote + Magnifying Glass"}
+  ],
+  trinketNote:"Dans les runs sérieuses sur floors élevés, toujours privilégier la première combinaison.",
+  inventory:"Soin, Soin, + 1 slot situationnel. Avant le floor de Dyle : emporter une Valve si vous en trouvez une. Après le floor de Dyle ou sans Valve : la Box of Chocolates est un bon choix. Vous pouvez aussi laisser le slot vide pour faire des achats en boutique.",
+  gameplay:[
+    "Solar Distracting : toujours marcher dans le sens opposé au distracteur. Si le distracteur tourne à gauche, vous tournez à droite. Si le distracteur vous demande de supporter les autres à la place, adaptez-vous librement.",
+    "Positionnez-vous près de l'ascenseur quand les joueurs reviennent, ils peuvent toujours profiter d'un boost après avoir couru depuis des machines éloignées.",
+    "Votre anneau fonctionne toujours pendant votre capacité active, donc n'hésitez pas à l'utiliser de façon défensive.",
+    "Soyez actif, orbitez autour des zones où l'équipe a le plus besoin d'endurance."
+  ],
+  panic:"Soyez devant le distracteur en courant vers l'ascenseur. Ne prenez pas de retard. Les escaliers et les obstacles environnementaux peuvent briser de façon inattendue la hiérarchie de stealth, restez alerte et positionnez-vous de manière proactive.",
+  mistake:"Les nouveaux joueurs supposent souvent que le boost de l'anneau s'active à sa bordure visible. Ce n'est pas le cas. Les joueurs doivent être clairement à l'intérieur de l'anneau, pas juste en train de frôler le bord. Si un allié effleure seulement la bordure, il ne recevra pas le boost."
+},
+{
+  id:"bassie", name:"Bassie", roles:["Support","Distracteur"], roleLabel:"Support / Distracteur de secours",
+  floor:83, floorPlus:false,
+  passive:"Bassie dispose de 4 slots d'inventaire au lieu du nombre habituel, ce qui lui confère une capacité de transport exceptionnelle.",
+  active:"Fait tomber des objets de son inventaire pour que ses coéquipiers proches puissent les ramasser.",
+  trinkets:[
+    {label:"Rôle extracteur", value:"Veemote + Thinking Cap"},
+    {label:"Rôle support", value:"Veemote + Feather Duster"},
+    {label:"Distracteur pur (solo)", value:"Feather Duster + Train Whistle"},
+    {label:"Distracteur pur (avec un duo distracteur)", value:"Feather Duster + Bone"}
+  ],
+  inventory:"Idéal : 4 soins. Alternative : 3 soins + 1 misc (objet d'endurance, de vitesse ou utilité situationnelle).",
+  gameplay:[
+    "Utilisez votre haute vitesse pour vous ruer sur les machines les plus éloignées en premier, puis les Veemoter.",
+    "Scoutez la map activement en vous déplaçant entre les machines, ramassez les objets utiles pour vos coéquipiers.",
+    "Utilisez votre active pour laisser tomber des soins et des fournitures aux coéquipiers qui en ont besoin.",
+    "Votre vitesse fait aussi de vous un distracteur de secours capable, n'hésitez pas à couvrir un distracteur en difficulté même sans le setup de trinkets dédié."
+  ],
+  panic:"Pas de notes spécifiques pour ce toon.",
+  mistake:"Être avare avec les objets. Toute l'identité de Bassie repose sur la distribution, garder les objets pour soi va à l'encontre de son rôle. Si vous avez 4 soins et que l'équipe en a besoin, déposez-les. C'est votre travail."
+},
+{
+  id:"sprout", name:"Sprout", roles:["Soigneur"], roleLabel:"Soigneur",
+  floor:105, floorPlus:false,
+  passive:"Sprout peut voir tous les toons vivants sur la map ainsi que leur santé exacte en permanence (rayons X intégrés).",
+  active:"Soigne un toon de 100 tapes. Capacité à distance qui traverse les murs, pas besoin de ligne de vue.",
+  trinkets:[
+    {label:"Standard (95% des runs)", value:"Dog Plush + Veemote"},
+    {label:"Alternative de niche", value:"Dog Plush + Magnifying Glass"}
+  ],
+  trinketNote:"Prendre Veemote par défaut sauf raison spécifique de changer.",
+  inventory:"2 soins + 1 slot libre pour ramasser et utiliser les objets au sol.",
+  gameplay:[
+    "Objectif de tapes : environ 2 000 tapes d'ici le floor 20, OU 55 à 60 tapes par floor de manière constante.",
+    "Sources de tapes : bonbons utilisés (1 à 5 tapes), objets tapes au sol (5 tapes), Veemoter une machine (10 tapes), se faire repérer par un twisted (5 tapes par twisted qui vous voit).",
+    "Jouez comme un aspirateur, ramassez chaque objet au sol en permanence, surtout sur les premiers floors.",
+    "Votre active est à distance et traverse les murs, restez à distance sécurisée quand vous soignez.",
+    "Consultez toujours le distracteur avant de soigner ou de prendre un twisted pour aller distraire vous-même.",
+    "Surveillez la santé de vos coéquipiers via votre passive et anticipez les soins avant que la situation ne devienne critique."
+  ],
+  panic:"Restez devant l'ascenseur, quelqu'un qui revient en courant pourrait avoir besoin d'un soin d'urgence. Se faire repérer par des twisteds en mode panique génère aussi des tapes gratuits.",
+  mistake:"Ne pas atteindre le quota de tapes par floor. Manquer régulièrement l'objectif de 55 à 60 tapes fait sécher les charges de soin en milieu de run. C'est l'erreur la plus impactante qu'un joueur Sprout puisse faire."
+},
+{
+  id:"shelly", name:"Shelly", roles:["Extracteur"], roleLabel:"Extracteur",
+  floor:70, floorPlus:false,
+  passive:"Shelly gagne des stacks d'Inspiration à chaque machine complétée. Chaque stack donne +25% de vitesse de déplacement pendant 10 secondes (cumulable).",
+  active:"Accorde +75% de vitesse d'extraction à un toon ciblé.",
+  trinkets:[{label:"Standard", value:"Veemote + Magnifying Glass"}],
+  inventory:"2 soins + 1 slot libre pour des objets de vitesse ou d'extraction. Achetez tout ce qui donne de la vitesse d'extraction, les Jawbreakers comptent.",
+  gameplay:[
+    "Boostez toujours une autre Shelly sur les machines dès que possible.",
+    "Priorité de boost : votre duo, puis la Shelly solo/lead, puis l'autre duo.",
+    "Si vous voyez une Shelly déjà boostée, ne la boostez pas à nouveau, priorisez une Shelly sans boost.",
+    "Si aucune Shelly n'est disponible à booster, travaillez la machine vous-même et spammez Golden Brick.",
+    "Ne boostez pas les toons non-Shelly sauf absolue nécessité, préférez éjecter le toon actuel de la machine.",
+    "Évitez de booster Shelly sur les machines Treadmill (elles s'adaptent à la vitesse de déplacement et aux stats de skill check).",
+    "Priorité des machines (VM) : la plus éloignée, en plein découvert, Treadmill, circulaire, normale.",
+    "Sur PC, appuyez sur T et descendez pour voir votre nombre de stacks d'Inspiration. À 2 stacks ou plus, vous pouvez privilégier les Treadmills.",
+    "Si vous êtes pourchassé, utilisez Golden Brick et rejoignez le toon de vitesse 4-5 étoiles le plus proche. Coupez les angles juste après.",
+    "En cas de doute sur votre chemin, référez-vous à votre duo ou à la Shelly leader."
+  ],
+  panic:"Gérez votre vitesse soigneusement pendant les blackouts, courir dans tous les sens est le moyen le plus rapide de faire échouer votre run. Restez calme et suivez votre logique de déplacement.",
+  mistake:"Courir dans tous les sens sans gestion de la vitesse, surtout lors des blackouts.",
+  notes:["Duo : un partenaire pré-arrangé, généralement une autre Shelly. Dans une run avec 4 Shelly, il y a deux duos.","Inspiration : stacks de vitesse de déplacement gagnés après avoir complété une machine, 25% par stack pendant 10 secondes."]
+},
+{
+  id:"pebble", name:"Pebble", roles:["Distracteur"], roleLabel:"Distracteur",
+  floor:50, floorPlus:false,
+  passive:"Pebble peut voir les objets au sol, ils sont mis en surbrillance pour lui.",
+  active:"Aboie, réduisant le stealth à 0 et alertant les twisteds proches. Si des twisteds sont déjà verrouillés sur quelqu'un, ils se retournent contre Pebble à la place.",
+  trinkets:[
+    {label:"Distracteur solo", value:"Dog Plush + Train Whistle"},
+    {label:"Distracteur en duo (avec un partenaire)", value:"Dog Plush + Clown Horn OU Dog Plush + Ribbon Spool"}
+  ],
+  trinketNote:"Ne remplacez Train Whistle que lorsque vous avez un duo distracteur confirmé.",
+  inventory:"2 objets de vitesse / endurance + 1 soin.",
+  gameplay:[
+    "Sortez de l'ascenseur en premier, revenez en dernier, à chaque fois, sans exception.",
+    "Votre objectif est de collecter tous les twisteds du floor aussi vite que possible.",
+    "Courez en grands cercles, loin du reste de l'équipe.",
+    "En mode panique, n'ayez pas peur de brûler votre endurance, utilisez ce que vous avez.",
+    "Solo : vous gérez tout. Plus de pression, mais Sprout vous repère parfois pour des tapes bonus. Si vous êtes confiant, c'est la façon de jouer à plus haut niveau.",
+    "Duo : deux distracteurs se partagent la charge. Plus sûr sur les floors cauchemar. Remplacez Train Whistle par Clown Horn ou Ribbon Spool une fois le duo confirmé."
+  ],
+  panic:"Brûlez votre endurance sans hésiter.",
+  mistake:"Ne pas communiquer. Ego distract, prendre plus de twisteds que vous ne pouvez en gérer sans prévenir personne, est la faute la plus dangereuse qu'un joueur Pebble puisse faire. Communiquez toujours ce que vous avez, ce dont vous avez besoin et quand vous êtes en difficulté. C'est obligatoire."
+},
+{
+  id:"astro", name:"Astro", roles:["Support"], roleLabel:"Support",
+  floor:100, floorPlus:false,
+  passive:"L'endurance se régénère 50% plus vite. Astro peut aussi voir tous les toons sur la map avec moins de 50% d'endurance, ainsi que leurs valeurs exactes.",
+  active:"Émet une impulsion qui restaure complètement l'endurance de tous les toons proches.",
+  trinkets:[{label:"Standard", value:"Veemote + Pink Bow"}],
+  trinketNote:"Le Pink Bow accorde un boost significatif de vitesse de course, vous permettant d'échapper à la plupart des menaces.",
+  inventory:"1 à 2 soins, slots restants situationnels.",
+  gameplay:[
+    "Utilisez votre fort stealth à votre avantage, travaillez les machines proches de la zone des distracteurs sans attirer l'attention.",
+    "Restez dans la moitié éloignée de la map en règle générale.",
+    "Surveillez les valeurs d'endurance via votre passive et préparez l'impulsion avant que les toons ne soient dans le rouge.",
+    "Priorisez les toons qui sont pourchassés, ce sont eux qui ont le plus besoin d'endurance.",
+    "Ne gâchez pas l'impulsion sur des toons qui vont bien, gardez-la pour les urgences."
+  ],
+  panic:"Utilisez votre impulsion sur les toons à faible endurance qui reviennent à l'ascenseur.",
+  mistake:"Mal utiliser la capacité active est la plus grosse erreur que les nouveaux joueurs Astro font."
+},
+{
+  id:"vee", name:"Vee", roles:["Extracteur"], roleLabel:"Extracteur",
+  floor:100, floorPlus:false,
+  passive:"Vee peut toujours voir les 2 machines inachevées (ou en cours) les plus proches sur la map. Elle peut utiliser ça pour rediriger les toons non occupés.",
+  active:"Met en surbrillance toutes les machines ET tous les twisteds pour chaque toon pendant 5 secondes.",
+  trinkets:[{label:"Standard", value:"Pink Bow + Magnifying Glass"}],
+  trinketNote:"Le Pink Bow compense sa faible vitesse de déplacement et lui permet d'échapper aux menaces plus facilement.",
+  inventory:"2 soins + 1 slot misc.",
+  gameplay:[
+    "Restez dans la moitié la plus proche de la map par rapport à l'ascenseur, idéalement près de lui en permanence.",
+    "Utilisez votre passive pour naviguer les toons non occupés vers les machines qui ont encore besoin d'attention.",
+    "Utilisez votre active au début de chaque nouveau floor pour donner à l'équipe une conscience totale de la map instantanément.",
+    "Sur les floors élevés ou pendant les blackouts, utiliser l'active deux fois ou plus est tout à fait valide.",
+    "Ne pas utiliser en mode panique, les twisteds sont déjà visibles et la capacité est gâchée."
+  ],
+  panic:"Comme tout toon lent, il est préférable d'arriver à l'ascenseur avant que le mode panique ne commence.",
+  mistake:"S'éloigner trop de l'ascenseur. La faible vitesse et le faible stealth de Vee la rendent extrêmement vulnérable loin des zones sûres. Utiliser la capacité active au mauvais moment, notamment en mode panique, est l'autre écueil majeur."
+},
+{
+  id:"blot", name:"Blot", roles:["Support","Distracteur"], roleLabel:"Support / Distracteur",
+  floor:30, floorPlus:false,
+  passive:"Aucune.",
+  active:"Pose un leurre qui attire les twisteds proches. Le leurre a 1 coeur. Coût : 10 tapes. Temps de recharge : 60 secondes.",
+  trinkets:[
+    {label:"Standard", value:"Veemote + Dog Plush"},
+    {label:"Focus extraction (si les petits skill checks vous dérangent)", value:"Veemote + Blue Bandana"}
+  ],
+  inventory:"1 soin + 2 misc (Box of Chocolates ou objets d'extraction).",
+  gameplay:[
+    "Ramassez des tapes au sol pour alimenter votre active, mais si un Sprout est présent dans l'équipe, privilégiez les machines pour ne pas lui voler ses tapes.",
+    "Si un toon lent est repéré par un twisted, placez votre leurre pour attirer le twisted et permettre à votre coéquipier de fuir.",
+    "La ligne de vue du leurre fonctionne comme un point d'exclamation : le twisted est au centre du point et la barre représente un cône. Le toon à secourir doit être dans cette zone, donc très proche si le twisted est derrière, ou plus loin si twisted et coéquipier courent dans votre direction."
+  ],
+  panic:"Pas de notes spécifiques.",
+  mistake:"Mal estimer la ligne de vue du leurre et le placer à un endroit inefficace.",
+  notes:["Ce toon n'est pas recommandé pour les runs longues."]
+},
+{
+  id:"cosmo", name:"Cosmo", roles:["Soigneur"], roleLabel:"Soigneur",
+  floor:30, floorPlus:true,
+  passive:"Aucune.",
+  active:"Donne l'un de ses propres coeurs pour soigner un toon ciblé. Ne peut pas être utilisée à 1 coeur. Temps de recharge : 60 secondes.",
+  trinkets:[
+    {label:"Standard", value:"Veemote + Pink Bow"},
+    {label:"Alternative", value:"Veemote + trinket d'extraction"}
+  ],
+  inventory:"3 soins, non négociables.",
+  gameplay:[
+    "Remplissez votre inventaire de soins dès que possible.",
+    "Ne soignez que les toons à 1 coeur, qu'il s'agisse de vous-même ou d'un coéquipier.",
+    "Utilisez votre stealth pour faire les machines dangereuses.",
+    "Pour les soins, c'est comme Sprout mais avec une portée encore plus grande."
+  ],
+  panic:"Comme Sprout, mais ne prenez pas d'aggro pour les tapes.",
+  mistake:"Être lâche et éviter les machines. Ne pas signaler quand vous êtes à court de soins.",
+  notes:["Pour l'amour du ciel, ne vous précipitez pas hors de l'ascenseur si vous êtes à 1 coeur."]
+},
+{
+  id:"finn", name:"Finn", roles:["Extracteur"], roleLabel:"Extracteur",
+  floor:52, floorPlus:false,
+  passive:"Chaque machine complétée donne un boost de vitesse de 33% pendant 10 secondes.",
+  active:"Aucune.",
+  trinkets:[{label:"Standard", value:"Veemote + Magnifying Glass"}],
+  inventory:"2 soins + 1 misc.",
+  gameplay:[
+    "Même logique que Shelly : priorisez les machines, gérez votre vitesse.",
+    "Ignorez simplement la partie active et duo de la fiche Shelly, le reste s'applique."
+  ],
+  panic:"Utilisez votre passive et COUREZ dès que le mode panique commence.",
+  mistake:"Les mêmes erreurs que Shelly.",
+  notes:["Merci de ne pas abuser des blagues sur les poissons (événement canonique)."]
+},
+{
+  id:"gigi", name:"Gigi", roles:["Extracteur"], roleLabel:"Extracteur",
+  floor:40, floorPlus:false,
+  passive:"Aucune.",
+  active:"Obtient un objet aléatoire quelle que soit sa rareté. Temps de recharge : 80 secondes.",
+  trinkets:[
+    {label:"Standard", value:"Veemote + Magnifying Glass"},
+    {label:"Focus gambling", value:"Ghost Snakes in a Can + Sweet Charm"}
+  ],
+  inventory:"2 soins + 1 slot libre pour les objets de votre active.",
+  gameplay:[
+    "Faites vos machines et n'oubliez pas d'en faire même si le gambling est addictif.",
+    "Attention, vous avez peu d'endurance de base, gérez-la soigneusement."
+  ],
+  panic:"En général, il est recommandé de retourner à l'ascenseur avant qu'il n'ouvre.",
+  mistake:"Tomber à court d'endurance à cause d'une faible endurance de base.",
+  notes:["Pas exactement fait pour les runs longues, mais amusez-vous bien."]
+},
+{
+  id:"goob", name:"Goob", roles:["Support","Distracteur"], roleLabel:"Support / Distracteur",
+  floor:30, floorPlus:true,
+  passive:"Aucune.",
+  active:"Tire les toons proches vers sa position. Nécessite une ligne de vue directe. Temps de recharge : 30 secondes.",
+  trinkets:[
+    {label:"Support", value:"Dog Plush + Speedy Shoes"},
+    {label:"Distracteur", value:"Dog Plush + Train Whistle"},
+    {label:"Réduction de temps de recharge", value:"Dog Plush + Ghost Snakes in a Can (réduit le CD de 5 secondes)"}
+  ],
+  inventory:"2 soins + 1 misc.",
+  gameplay:[
+    "En support : faites des machines et tirez les coéquipiers vers vous s'ils sont pourchassés ou immobiles devant l'ascenseur en mode panique.",
+    "En distracteur : suivez la fiche Pebble."
+  ],
+  panic:"En support : comme Vee. En distracteur : comme Pebble.",
+  mistake:"Tirer des coéquipiers sans raison valable."
+},
+{
+  id:"looey", name:"Looey", roles:["Extracteur","Distracteur"], roleLabel:"Extracteur / Distracteur",
+  floor:110, floorPlus:false,
+  passive:"Pour chaque coeur manquant, ce toon gagne 20% de vitesse de marche et de course supplémentaire. À 1 coeur, il gagne 40% de vitesse supplémentaire. La vitesse revient à la normale quand il est soigné.",
+  active:"Aucune.",
+  trinkets:[
+    {label:"Distracteur", value:"Dog Plush + Train Whistle OU Dog Plush + Speedy Shoes"},
+    {label:"Extracteur", value:"Veemote + Magnifying Glass"}
+  ],
+  inventory:"1 soin + 2 misc en distracteur, 2 soins + 1 misc en extracteur.",
+  gameplay:[
+    "En tant que distracteur ou extracteur, suivez les mêmes principes que les autres toons de votre rôle.",
+    "Ne restez à 1 coeur que face à Twisted Glisten ou Twisted Pebble."
+  ],
+  panic:"Comme les autres distracteurs.",
+  mistake:"Rester à 1 coeur en permanence. La moindre erreur vous tue. Gérez votre santé.",
+  notes:["Ne descendez à 1 coeur que dans le cas de Twisted Glisten ou Twisted Pebble."]
+},
+{
+  id:"rodger", name:"Rodger", roles:["Extracteur"], roleLabel:"Extracteur",
+  floor:50, floorPlus:false,
+  passive:"Double les recherches obtenues quand il est repéré ou quand il ramasse des capsules.",
+  active:"Aucune.",
+  trinkets:[
+    {label:"Standard", value:"Veemote + Magnifying Glass"},
+    {label:"Alternative", value:"Pink Bow + Magnifying Glass"}
+  ],
+  inventory:"2 soins + 1 misc.",
+  gameplay:[
+    "Comme tout extracteur, faites vos machines en priorité.",
+    "Ne prenez de l'aggro pour les recherches que lorsque le distracteur ramène les twisteds vers l'ascenseur."
+  ],
+  panic:"Vous êtes lent, arrivez à l'ascenseur avant que le mode panique ne commence.",
+  mistake:"Aller trop loin de l'ascenseur sur une grande map.",
+  notes:["Ne jouez pas les moustiques. Restez hors de la zone du distracteur."]
+},
+{
+  id:"tisha", name:"Tisha", roles:["Support","Distracteur"], roleLabel:"Support / Distracteur budget",
+  floor:50, floorPlus:false,
+  passive:"Aucune.",
+  active:"Crée une impulsion qui augmente la vitesse de déplacement des toons autour d'elle de 25% pendant 5 secondes. Temps de recharge : 50 secondes.",
+  trinkets:[
+    {label:"Support", value:"Veemote + Magnifying Glass"},
+    {label:"Réduction de CD", value:"Veemote + Ghost Snakes in a Can (réduit le CD de 5 secondes)"},
+    {label:"Distracteur", value:"Dog Plush + Speedy Shoes"}
+  ],
+  inventory:"2 soins + 1 misc.",
+  gameplay:[
+    "Boostez au début du round et chaque fois que vous voyez quelqu'un en difficulté.",
+    "Le boost fonctionne aussi pour les toons sur les machines Treadmill."
+  ],
+  panic:"En distracteur : comme Pebble. Sinon : comme Astro.",
+  mistake:"Gâcher le boost pour un seul toon qui ne distrait pas et n'est pas sur une machine Treadmill."
+},
+{
+  id:"teagan", name:"Teagan", roles:["Extracteur"], roleLabel:"Extracteur / Survivaliste",
+  floor:40, floorPlus:true,
+  passive:"Aucune.",
+  active:"Dépense 75 tapes pour se soigner d'un coeur. Temps de recharge : 100 secondes.",
+  trinkets:[{label:"Standard", value:"Veemote"}],
+  trinketNote:"Le reste dépend de la situation.",
+  inventory:"2 soins + 1 misc.",
+  gameplay:[
+    "S'il n'y a pas de collecteurs de tapes dans l'équipe, vous pouvez prendre des tapes, sinon faites des machines, c'est plus efficace."
+  ],
+  panic:"Comme tout extracteur, mais avec beaucoup d'endurance, donc moins de pression.",
+  mistake:"Ne pas faire attention à son stealth."
+},
+{
+  id:"yatta", name:"Yatta", roles:["Extracteur"], roleLabel:"Extracteur",
+  floor:50, floorPlus:false,
+  passive:"Laisse tomber 2 objets de type bonbon en finissant une machine, et 4 en perdant un coeur.",
+  active:"Aucune.",
+  trinkets:[{label:"Standard", value:"Veemote + Magnifying Glass"}],
+  inventory:"2 soins + 1 slot libre pour vos bonbons ou un misc.",
+  gameplay:[
+    "S'il y a un Sprout dans l'équipe, laissez-le ramasser les bonbons que vous lâchez.",
+    "S'il n'y a pas de Sprout, ramassez-les vous-même.",
+    "Vous êtes assez rapide mais avec peu d'endurance, gérez-la soigneusement."
+  ],
+  panic:"Vous êtes rapide mais vite à court d'endurance, gérez votre rythme.",
+  mistake:"Ne pas faire attention à son endurance.",
+  notes:["Votre passive peut lâcher des Box of Chocolates. Si vous en lâchez une dont vous n'avez pas besoin, prévenez l'équipe."]
+},
+{
+  id:"eclipse", name:"Eclipse", roles:["Distracteur"], roleLabel:"Distracteur",
+  floor:35, floorPlus:true,
+  passive:"Se transforme en loup-garou pendant les blackouts, gagnant une lueur, 2 étoiles d'endurance supplémentaires et un boost de vitesse de déplacement de 20%.",
+  active:"Aucune.",
+  trinkets:[
+    {label:"Solo avec Bobette OU duo Eclipse", value:"Dog Plush + Train Whistle"},
+    {label:"Duo Eclipse (alternative)", value:"Dog Plush + Clown Horn OU Dog Plush + Ribbon Spool"},
+    {label:"Solo sans Bobette mais avec Sprout", value:"Dog Plush + Speedy Shoes"}
+  ],
+  inventory:"2 soins + 1 misc.",
+  gameplay:[
+    "Suivez les principes généraux des distracteurs.",
+    "En duo Eclipse, mettez-vous d'accord avec votre partenaire sur les rôles avant de commencer.",
+    "Clown Horn est actif sur les floors impairs, Ribbon Spool sur les floors pairs. L'un sera toujours actif et l'autre non, répartissez les twisteds en conséquence."
+  ],
+  panic:"Comme tout distracteur.",
+  mistake:"Ne pas se coordonner avec son duo avant la run.",
+  notes:[
+    "En duo face à Twisted Pebble : en blackout, celui dont le second trinket est actif prend tous les twisteds y compris Twisted Pebble. Hors blackout, le duo dont le second trinket est inactif prend Twisted Pebble avec la stratégie de l'îlot, l'autre prend le reste.",
+    "Rappel : Clown Horn n'est actif que sur les floors impairs, Ribbon Spool uniquement sur les floors pairs."
+  ]
+},
+{
+  id:"ginger", name:"Ginger", roles:["Soigneur"], roleLabel:"Soigneur",
+  floor:100, floorPlus:false,
+  passive:"Aucune.",
+  active:"Soigne un toon proche à plein pour 100 tapes. La capacité doit être maintenue environ 4 secondes. Temps de recharge : 100 secondes.",
+  trinkets:[{label:"Standard", value:"Pink Bow + Veemote"}],
+  inventory:"2 soins + 1 objet de vitesse.",
+  gameplay:[
+    "Collectez des tapes comme Sprout et soignez les toons à 1 coeur.",
+    "Vous êtes lente et votre active nécessite de la proximité, donc difficile à utiliser en mouvement.",
+    "Privilégiez les soins à un moment de repos ou quand le toon ciblé est arrêté."
+  ],
+  panic:"Comme tout toon lent, arrivez à l'ascenseur avant que le mode panique ne commence.",
+  mistake:"Soigner des toons à 2 coeurs (sauf si leur maximum est 4 coeurs). Ne soignez que les toons à 1 coeur."
+},
+{
+  id:"rudie", name:"Rudie", roles:["Distracteur","Extracteur"], roleLabel:"Distracteur improvisé / Survivaliste",
+  floor:40, floorPlus:true,
+  passive:"Aucune.",
+  active:"Utilise ses bois pour foncer vers l'avant sur une courte distance, aidant à fuir les situations délicates.",
+  trinkets:[
+    {label:"Survivaliste / extracteur", value:"Trinkets d'extraction standard"},
+    {label:"Distracteur", value:"Ghost Snakes in a Can + Peppermint Icing"}
+  ],
+  inventory:"2 soins + 1 misc.",
+  gameplay:[
+    "En extracteur : faites des machines normalement.",
+    "En distracteur : parlez à votre équipe pour qu'elle vous procure les deux cartes de réduction de temps de recharge dès que possible. Avec un CD de 6 secondes, vous pouvez distraire confortablement."
+  ],
+  panic:"Pas de notes spécifiques.",
+  mistake:"Foncer dans les murs avec votre active.",
+  notes:["Vous pouvez sauter sur les caisses. Ne faites pas ça dans une run sérieuse ou avec des inconnus sous peine de signalement."]
+}
+];
+
+/* ---------- Rendering: toon list ---------- */
+const listEl = document.getElementById('toon-list');
+const searchEl = document.getElementById('search');
+const filtersEl = document.getElementById('filters');
+let activeFilter = "Tous";
+let selectedId = null;
+
+function roleDotColor(roles){ return ROLE_COLOR[roles[0]] || "var(--text-muted)"; }
+
+function renderList(){
+  const q = searchEl.value.trim().toLowerCase();
+  const filtered = toons.filter(t=>{
+    const matchesRole = activeFilter === "Tous" || t.roles.includes(activeFilter);
+    const matchesSearch = t.name.toLowerCase().includes(q);
+    return matchesRole && matchesSearch;
+  }).sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+  listEl.innerHTML = "";
+  if(filtered.length === 0){
+    const li = document.createElement('div');
+    li.className = "empty-list";
+    li.textContent = "Aucun toon ne correspond.";
+    listEl.appendChild(li);
+    return;
+  }
+  filtered.forEach(t=>{
+    const li = document.createElement('li');
+    li.dataset.id = t.id;
+    if(t.id === selectedId) li.classList.add('selected');
+    li.innerHTML = `<span class="dot" style="background:${roleDotColor(t.roles)}"></span><span class="name">${t.name}</span><span class="floor">F${t.floor}${t.floorPlus?'+':''}</span>`;
+    li.addEventListener('click', ()=>selectToon(t.id));
+    listEl.appendChild(li);
+  });
+}
+
+filtersEl.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    filtersEl.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    activeFilter = chip.dataset.role;
+    renderList();
+  });
+});
+searchEl.addEventListener('input', renderList);
+
+/* ---------- Rendering: detail ---------- */
+const detailContent = document.getElementById('detail-content');
+
+function renderDetail(t){
+  const rolePills = t.roles.map(r=>`<span class="role-pill ${r}">${r}</span>`).join(" ");
+  const plainRoles = t.roles.join(" / ");
+  const extraLabel = t.roleLabel !== plainRoles
+    ? `<span style="font-size:12px;color:var(--text-muted);font-family:var(--font-body);">${t.roleLabel}</span>`
+    : "";
+  const pct = Math.round((t.floor / MAX_FLOOR) * 100);
+  const trinketsHtml = t.trinkets.map(tr=>`
+    <div class="trinket-row"><span class="t-label">${tr.label}</span><span class="t-combo">${tr.value}</span></div>
+  `).join("");
+  const gameplayHtml = t.gameplay ? `<ul class="tips">${t.gameplay.map(g=>`<li>${g}</li>`).join("")}</ul>` : "";
+  const notesHtml = t.notes ? `<div class="notes-box">${t.notes.map(n=>`<p>${n}</p>`).join("")}</div>` : "";
+  const trinketNoteHtml = t.trinketNote ? `<div class="warn-box" style="margin-top:8px;">${t.trinketNote}</div>` : "";
+
+  detailContent.innerHTML = `
+    <div class="detail-header">
+      <div>
+        <h1>${t.name}</h1>
+        <div class="role-line">${rolePills}${extraLabel}</div>
+      </div>
+      <div class="floor-gauge">
+        <div class="label"><span>Floor le plus haut atteint</span><span>${t.floor}${t.floorPlus?'+':''}</span></div>
+        <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>
+
+    <section class="block">
+      <h2>Capacités</h2>
+      <div class="cap-grid">
+        <div class="cap-card"><span class="tag">Passive</span><p>${t.passive}</p></div>
+        <div class="cap-card"><span class="tag">Active</span><p>${t.active}</p></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Trinkets recommandés</h2>
+      <div class="trinket-list">${trinketsHtml}</div>
+      ${trinketNoteHtml}
+    </section>
+
+    <section class="block">
+      <h2>Inventaire</h2>
+      <div class="inv-box">${t.inventory}</div>
+    </section>
+
+    ${t.gameplay ? `<section class="block"><h2>Gameplay et état d'esprit</h2>${gameplayHtml}</section>` : ""}
+
+    <section class="block">
+      <h2>Mode panique</h2>
+      <div class="panic-box">${t.panic}</div>
+    </section>
+
+    <section class="block">
+      <h2>Erreur courante</h2>
+      <div class="warn-box">${t.mistake}</div>
+    </section>
+
+    ${notesHtml ? `<section class="block"><h2>Notes supplémentaires</h2>${notesHtml}</section>` : ""}
+  `;
+}
+
+function selectToon(id){
+  selectedId = id;
+  const t = toons.find(x=>x.id===id);
+  if(!t) return;
+  renderDetail(t);
+  renderList();
+  closeSidebarMobile();
+  document.getElementById('detail').scrollTo({top:0,behavior:'instant'});
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+/* ---------- Mobile sidebar ---------- */
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+const menuBtn = document.getElementById('menuBtn');
+const backBtn = document.getElementById('backBtn');
+
+function openSidebarMobile(){ sidebar.classList.add('open'); overlay.classList.add('open'); }
+function closeSidebarMobile(){ sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+menuBtn.addEventListener('click', openSidebarMobile);
+overlay.addEventListener('click', closeSidebarMobile);
+backBtn.addEventListener('click', openSidebarMobile);
+
+/* ---------- Tabs ---------- */
+const tabToons = document.getElementById('tab-toons');
+const tabGeneral = document.getElementById('tab-general');
+const viewToons = document.getElementById('view-toons');
+const viewGeneral = document.getElementById('view-general');
+
+tabToons.addEventListener('click', ()=>{
+  tabToons.classList.add('active'); tabGeneral.classList.remove('active');
+  viewToons.classList.add('active'); viewToons.style.display='flex';
+  viewGeneral.classList.remove('active'); viewGeneral.style.display='none';
+});
+tabGeneral.addEventListener('click', ()=>{
+  tabGeneral.classList.add('active'); tabToons.classList.remove('active');
+  viewGeneral.classList.add('active'); viewGeneral.style.display='block';
+  viewToons.classList.remove('active'); viewToons.style.display='none';
+});
+
+/* ---------- General tab content ---------- */
+viewGeneral.innerHTML = `
+  <h1>Conseils divers et connaissances générales</h1>
+
+  <h2>Distraire des twisteds spécifiques</h2>
+  <div class="twisted-card"><b>Twisted Pebble</b> : Trouvez un îlot à peu près de la même longueur que le twisted et tournez autour. Serrez les virages au plus près. Passer en vue du dessus aide à mieux serrer les angles. Si vous décidez de jungle avec (prendre tous les twisteds avec Pebble), trouvez le plus grand endroit que vous voyez et faites votre distraction en vous déplaçant comme si vous faites un 8, et non pas un cercle.</div>
+  <div class="twisted-card"><b>Scraps et Goob</b> : Tous deux sont pénibles à distraire. Leurs attaques à distance se déclenchent toutes les 12 secondes, planifiez en conséquence.</div>
+  <div class="twisted-card"><b>Gigi</b> : L'attaque à distance se déclenche toutes les 10 secondes.</div>
+  <div class="twisted-card"><b>Twisted Sprout</b> : L'attaque à distance se déclenche environ toutes les 12 secondes.</div>
+  <div class="twisted-card"><b>Twisted Bassie</b> : Après avoir utilisé sa capacité, elle se verrouille sur vous pendant 10 secondes complètes peu importe votre niveau de stealth. Ne tentez pas de briser la ligne de vue, courez simplement.</div>
+
+  <h2>Stealth et escaliers</h2>
+  <ul class="tips">
+    <li>Ne suivez jamais quelqu'un qui a des twisteds derrière lui dans les escaliers.</li>
+    <li>Monter des escaliers près de twisteds actifs peut provoquer un verrouillage aléatoire sur vous, la hiérarchie de stealth se brise de façon inattendue dans ces situations.</li>
+    <li>Évitez les escaliers à distance quand des twisteds sont dans la zone.</li>
+  </ul>
+
+  <h2>Tableau de référence des vitesses (Twisteds)</h2>
+  <p style="font-size:13px;color:var(--text-muted);margin:0 0 10px;">Les vitesses sont affichées comme : vitesse de course hors panic / vitesse de course en panic / panic avec suppression.</p>
+  <div class="table-wrap">
+    <table class="speed">
+      <tr><th>Twisted</th><th>Hors panic</th><th>En panic</th><th>Panic + suppression</th></tr>
+      <tr><td class="first">Twisted Pebble</td><td>24</td><td>28,8</td><td>27,6</td></tr>
+      <tr><td class="first">Twisted Glisten</td><td>24</td><td>28,8</td><td>27,6</td></tr>
+      <tr><td class="first">Twisted Toodles</td><td>20</td><td>24</td><td>23</td></tr>
+      <tr><td class="first">Twisted Shelly</td><td>20</td><td>24</td><td>23</td></tr>
+      <tr><td class="first">Twisted Yatta</td><td>19</td><td>22,8</td><td>21,85</td></tr>
+      <tr><td class="first">Twisted Gigi</td><td>19</td><td>22,8</td><td>21,85</td></tr>
+      <tr><td class="first">Twisted Astro</td><td>19</td><td>22,8</td><td>21,85</td></tr>
+      <tr><td class="first">Twisted Vee</td><td colspan="3">18 / 21,6 / 20,7. Prenez en compte Slow II, qui réduit votre vitesse de 25%.</td></tr>
+      <tr><td class="first">Twisted Sprout</td><td>17</td><td>20,4</td><td>19,55</td></tr>
+    </table>
+  </div>
+
+  <h2>Tableau de référence des vitesses (Toons)</h2>
+  <div class="table-wrap">
+    <table class="speed">
+      <tr><th>Toon / setup</th><th>Détail</th></tr>
+      <tr><td class="first">Sprout (marche avec Dog Plush)</td><td>19,3</td></tr>
+      <tr><td class="first">Eclipse · Dog Plush + Train Whistle</td><td>19,3 marche · 23,1 marche en blackout</td></tr>
+      <tr><td class="first">Eclipse · Dog Plush + Speedy Shoes</td><td>20,2 marche · 24,25 marche en blackout</td></tr>
+      <tr><td class="first">Eclipse · Dog Plush + Clown Horn / Ribbon Spool (actif)</td><td>21,2 marche / 30,3 course · 25,41 marche / 36,3 course en blackout</td></tr>
+      <tr><td class="first">Looey · Dog Plush + Train Whistle</td><td>16,5 marche à 3 coeurs · 19,8 à 2 coeurs · 23,1 à 1 coeur</td></tr>
+      <tr><td class="first">Looey · Dog Plush + Speedy Shoes</td><td>17,25 marche / 26,3 course à 3 coeurs · 20,8 / 31,5 à 2 coeurs · 24,25 / 36,8 à 1 coeur</td></tr>
+      <tr><td class="first">Pebble</td><td>22 marche (Dog Plush seul) · 23,1 (+ Speedy Shoes) · 24,2 (+ Clown Horn / Ribbon Spool)</td></tr>
+    </table>
+  </div>
+
+  <h2>Compositions d'équipe populaires</h2>
+  <div class="comp-list">
+    <div class="comp-row"><b>Classique</b> : 2 Pebble, 5 Shelly, 1 Sprout.</div>
+    <div class="comp-row"><b>Alternative</b> : 1 Looey, 1 Bobette, 1 Sprout, 5 Shelly.</div>
+    <div class="comp-row"><b>Duo Eclipse</b> : 2 Eclipse, 1 Bobette, 1 Sprout, 1 Vee, 1 Yatta, 2 Shelly.</div>
+    <div class="comp-row"><b>Hybride</b> : 1 Looey, 1 Sprout, 1 Eclipse, 1 Vee, 4 Shelly.</div>
+    <div class="comp-row">Si vous avez moins de 4 Shelly, vous pouvez soit jouer 3 Yatta, soit jouer 2 Shelly et 1 Yatta.</div>
+  </div>
+
+  <h2>Autres notes</h2>
+  <ul class="tips">
+    <li>Regardez toujours en l'air quand Twisted Squirm est sur le floor.</li>
+  </ul>
+
+  <div class="closing">Ne soyez pas découragé si vous ne jouez pas parfaitement. On joue pour s'amuser, après tout.</div>
+`;
+
+/* ---------- Init ---------- */
+renderList();
+const firstAlphabetical = [...toons].sort((a,b)=>a.name.localeCompare(b.name,'fr'))[0];
+selectToon(firstAlphabetical.id);
+</script>
+</body>
+</html>
